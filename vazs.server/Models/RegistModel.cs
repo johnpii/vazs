@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace vazs.Server.Models
+namespace vazs.server.Models
 {
     public class RegistModel
     {

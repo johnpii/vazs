@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using vazs.Server.Models;
+using vazs.server.Models;
 
-namespace vazs.Server.Controllers
+namespace vazs.server.Controllers
 {
     public class HomeController : Controller
     {
