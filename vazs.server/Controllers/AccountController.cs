@@ -3,7 +3,11 @@ using Firebase.Auth.Providers;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using vazs.server.Helpers;
 using vazs.server.Models;
 
 namespace vazs.server.Controllers
@@ -91,13 +95,40 @@ namespace vazs.server.Controllers
             try
             {
                 var userCredential = await client.SignInWithEmailAndPasswordAsync(user.Email, user.Password);
+                string uid = userCredential.User.Uid;
+                if (!string.IsNullOrEmpty(uid))
+                {
+                    var userData = await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
 
-                return Ok(userCredential.User.Uid);
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, userData.DisplayName),
+                        new Claim(ClaimTypes.Email, userData.Email)
+                    };
+
+                    if (userData.CustomClaims != null && userData.CustomClaims.TryGetValue("role", out var roleValue))
+                    {
+                        string role = roleValue?.ToString();
+                        claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, role));
+                    }
+
+                    var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                    await HttpContext.SignInAsync(claimsPrincipal);
+                    return Ok();
+                }
+                return BadRequest();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok();
         }
     }
 }

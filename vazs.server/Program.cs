@@ -1,4 +1,23 @@
+using Firebase.Database;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using vazs.server.Helpers;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = ConfigurationHelper.expireTimeCookie;
+    });
+// Добавляем сервис FirebaseClient
+builder.Services.AddSingleton<FirebaseClient>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new FirebaseClient(configuration.GetValue<string>("Firebase_Database_Adress"), new FirebaseOptions
+    {
+        AuthTokenAsyncFactory = () => Task.FromResult(configuration.GetValue<string>("Firebase_Database_Secret"))
+    });
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
