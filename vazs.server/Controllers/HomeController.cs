@@ -17,20 +17,19 @@ namespace vazs.server.Controllers
             _firebaseClient = firebaseClient;
         }
 
-        public void Index()
+        public async Task<ActionResult> index()
         {
-            // Создаем и заполняем департаменты
-            var departments = new List<DepartmentModel>
+            try
             {
-                new DepartmentModel { Name = "Department 1", Description = "Description 1" },
-                new DepartmentModel { Name = "Department 2", Description = "Description 2" },
-                new DepartmentModel { Name = "Department 3", Description = "Description 3" }
-            };
+                var departments = await _firebaseClient
+                .Child("departments")
+                .OnceAsync<DepartmentModel>();
 
-            // Записываем департаменты в базу данных Firebase
-            foreach (var department in departments)
+                return Ok(departments);
+            }
+            catch (Exception ex)
             {
-                _firebaseClient.Child("departments").PostAsync(department);
+                return BadRequest(ex.Message);
             }
         }
 
