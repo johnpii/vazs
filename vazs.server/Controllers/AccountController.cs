@@ -6,6 +6,8 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using vazs.server.Models;
 
@@ -46,12 +48,17 @@ namespace vazs.server.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Regist()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Regist(RegistModel user)
         {
             try
             {
-                //var userCredential = await client.CreateUserWithEmailAndPasswordAsync("cetadi9870@grassdev.com", "dsakgdkayuvsv123", "John");
                 var userCredential = await client.CreateUserWithEmailAndPasswordAsync(user.Email, user.Password, user.Username);
 
                 await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(userCredential.User.Uid, new Dictionary<string, object>
@@ -59,11 +66,57 @@ namespace vazs.server.Controllers
                     { "role", "user" }
                 });
 
+                // Генерация ссылки для подтверждения почты
+                var emailActionLink = await FirebaseAuth.DefaultInstance.GenerateEmailVerificationLinkAsync(user.Email);
+
+                // Отправка письма с ссылкой для подтверждения почты
+                SendConfirmationEmail(user.Email, emailActionLink);
+
                 return Ok();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        private void SendConfirmationEmail(string recipientEmail, string confirmationLink)
+        {
+            // Настройки SMTP-сервера (замените значения на свои)
+            string smtpHost = "smtp.elasticemail.com";
+            int smtpPort = 2525;
+            string smtpUsername = _configuration.GetValue<string>("SMTP_Username");
+            string smtpPassword = _configuration.GetValue<string>("SMTP_Password");
+
+            // Создание сообщения
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(_configuration.GetValue<string>("SMTP_Username"));
+            message.To.Add(new MailAddress(recipientEmail));
+            message.Subject = "Подтверждение регистрации";
+            message.Body = "Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке: " + confirmationLink;
+
+            // Настройка клиента SMTP
+            SmtpClient smtpClient = new SmtpClient(smtpHost, smtpPort);
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+            smtpClient.EnableSsl = true;
+
+            // Отправка письма
+            smtpClient.Send(message);
+        }
+
+        [HttpGet("[controller]/[action]/{mail}")]
+        public async Task<IActionResult> CheckEmailVerified(string mail)
+        {
+            // Проверка статуса подтверждения почты
+            var userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(mail);
+            if (userRecord.EmailVerified)
+            {
+                return Ok("Почта подтверждена");
+            }
+            else
+            {
+                return BadRequest("Подтвердите вашу почту, чтобы завершить регистрацию.");
             }
         }
 
