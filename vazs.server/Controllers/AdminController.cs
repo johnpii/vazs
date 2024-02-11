@@ -1,10 +1,12 @@
 ﻿using Firebase.Database;
 using Firebase.Database.Query;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using vazs.server.Models;
 
 namespace vazs.server.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class AdminController : Controller
     {
         private readonly FirebaseClient _firebaseClient;

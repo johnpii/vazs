@@ -1,5 +1,4 @@
 ﻿using Firebase.Database;
-using Firebase.Database.Query;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using vazs.server.Models;

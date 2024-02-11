@@ -6,8 +6,8 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mail;
 using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using vazs.server.Models;
 
@@ -93,16 +93,22 @@ namespace vazs.server.Controllers
             message.From = new MailAddress(_configuration.GetValue<string>("SMTP_Username"));
             message.To.Add(new MailAddress(recipientEmail));
             message.Subject = "Подтверждение регистрации";
+            message.BodyEncoding = System.Text.Encoding.UTF8; // указание кодировки письма
+            message.IsBodyHtml = false; // указание формата письма (true - HTML, false - не HTML)
             message.Body = "Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке: " + confirmationLink;
+
+            // Добавление DMARC
+            message.Headers.Add("DMARC", "v=DMARC1; p=none; pct=100; aspf=s; adkim=s;");
 
             // Настройка клиента SMTP
             SmtpClient smtpClient = new SmtpClient(smtpHost, smtpPort);
-            smtpClient.UseDefaultCredentials = false;
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network; // определяет метод отправки сообщений
+            smtpClient.EnableSsl = false; // отключает необходимость использования защищенного соединения с сервером
+            smtpClient.UseDefaultCredentials = false; // отключение использования реквизитов авторизации "по-умолчанию"
             smtpClient.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
-            smtpClient.EnableSsl = true;
 
             // Отправка письма
-            smtpClient.Send(message);
+            smtpClient.SendMailAsync(message);
         }
 
         [HttpGet("[controller]/[action]/{mail}")]
