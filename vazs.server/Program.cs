@@ -22,6 +22,8 @@ builder.Services.AddSingleton<FirebaseClient>(provider =>
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,6 +40,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseCors(builder => builder.AllowAnyOrigin());
 
 app.MapControllerRoute(
     name: "default",
