@@ -38,7 +38,7 @@ const LoginPage = () => {
       </form>
       <p className="no-account">
         Нет аккаунта?
-        <Link to="/registration" className="register">
+        <Link to="/register" className="register">
           Зарегистрироваться
         </Link>
       </p>

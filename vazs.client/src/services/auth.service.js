@@ -1,38 +1,53 @@
-import axios from "axios";
+// import axios from "axios";
 
-export const register = async(email, password, username) => {
-    try{
-        const res = await axios.post(
-        "http://localhost:7251/Account/Regist",
-        {
-            email,
-            password,
-            username
-        },
-        {
-            withCredentials: true
-        })  
-        // console.log(res);
-        // return { res: res, status: res.status };
-    } catch (e) {
-        console.log(e)
-        // return { res: e, status: e.response.status };
-    }  
+// export const register = async(email, password, username) => {
+//     axios
+//       .post("Account/Regist", {
+//         email,
+//         password,
+//         username,
+//       })
+//       .then((response) => {
+//         console.log(JSON.stringify(response.data));
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+// }
+// export const login = async(email, password) => {
+//     axios
+//       .post("/Account/Login", {
+//         email,
+//         password
+//       })
+//       .then((response) => {
+//         console.log(JSON.stringify(response.data));
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+// }
+
+const requestOptions = {
+  method: "POST",
+  credentials: "include",
+};
+
+export const login = (email, password) => {
+  fetch(
+    `/api/login?email=${email}&password=${password}`,
+    requestOptions
+  )
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
 }
-export const login = async(email, password) => {
-    try{
-        axios.post(
-            "http://localhost:7251/Account/Login",
-        {
-            email,
-            password,
-        },
-        {
-            withCredentials: true,
-        })
-        // console.log(res);
-        // return { res: res, status: res.status };
-    }catch(e){
-        console.log(e)
-    };
-}
+export const register = (email, password, username) => {
+  fetch(
+    `https://localhost:7251/Account/Regist?email=${email}&password=${password}&username=${username}`,
+    { method: "POST" }
+  )
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
+};
