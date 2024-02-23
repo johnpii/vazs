@@ -6,10 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/Login": {
-        target: "http://localhost:7251/Account",
+      "/api/login": {
+        target: "https://localhost:7251",
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api\/login/, "/Account/Login"),
       },
     },
   },
