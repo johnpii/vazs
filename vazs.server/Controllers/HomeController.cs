@@ -16,7 +16,7 @@ namespace vazs.server.Controllers
             _firebaseClient = firebaseClient;
         }
 
-        public async Task<ActionResult> index()
+        public async Task<ActionResult> Index()
         {
             try
             {
