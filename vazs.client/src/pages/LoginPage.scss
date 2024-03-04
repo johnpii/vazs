@@ -3,6 +3,8 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
     .container{
         display: flex;
         align-items: center;
@@ -12,7 +14,7 @@
         background-color: rgb(255, 255, 255);
         border: 2px solid rgba(255, 255, 255, 0.1);
         border-radius: 20px;
-        box-shadow: 10px -20px 50px 20px rgba(255, 255, 255, 0.15);
+        box-shadow: 10px 10px 20px 10px rgba(0, 0, 0, 0.1);
         .login__title{
             margin: 20px 0 30px;
             color: #090A0C;

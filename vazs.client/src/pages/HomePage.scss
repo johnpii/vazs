@@ -1,0 +1,86 @@
+.home{
+    nav{
+        padding: 25px 40px 0;
+        position: fixed;
+        background-color: rgba(255, 255, 255, 0);
+        display: flex;
+        align-items: center;
+        width: 100vw;
+        .item__link{
+            text-decoration: none;
+            color: inherit;
+            .logo{
+                font-size: 36px;
+            } 
+        }
+        .nav{
+            margin: 0 0 0 40px;
+            padding: 0;
+            width: 100%;
+            list-style: none;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .nav__item{
+                .item__link{
+                    text-decoration: none;
+                    color: inherit;
+                    .register-link{
+                        border-radius: 40px;
+                        box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+                        background: #fff;
+                        width: fit-content;
+                        padding: .5rem 1rem;
+                    }
+                }
+            }
+        }
+    }
+    header{
+        height: 100vh;
+        background: #ABD7FF;
+        .header__title{
+            padding-top: 145px;
+            margin-left: 204px;
+            font-weight: 400;
+            font-size: 66px;
+        }
+        .header__text{
+            max-width: 915px;
+            height: fit-content;
+            margin-left: 790px;
+            padding: 2rem 4.5rem;
+            background-color: rgba(152, 169, 232, 0.6);
+            border-radius: 70px;
+            font-weight: 400;
+            font-size: 96px;
+        }
+    }
+    main{
+        height: 100vh;
+        background: #ABD7FF;
+        .main__title{
+            padding-top: 130px;
+            text-align: right;
+            margin-right: 200px;
+            font-weight: 400;
+            font-size: 66px;
+        }
+        .main__text{
+            max-width: 915px;
+            height: fit-content;
+            margin-top: 15px;
+            margin-left: 40px;
+            padding: 2rem 4.5rem;
+            background-color: rgba(152, 169, 232, 0.6);
+            border-radius: 70px;
+            font-weight: 400;
+            font-size: 96px;
+        }
+    }
+    .about{
+        height: 100vh;
+        background: #ABD7FF;
+    }
+}
