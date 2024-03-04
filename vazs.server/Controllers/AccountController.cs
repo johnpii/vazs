@@ -86,8 +86,8 @@ namespace vazs.server.Controllers
         private void SendConfirmationEmail(string recipientEmail, string confirmationLink, string username)
         {
             // Настройки SMTP-сервера
-            string smtpHost = "smtp.elasticemail.com";
-            int smtpPort = 2525;
+            string smtpHost = "smtp.gmail.com";
+            int smtpPort = 587;
             string smtpUsername = _configuration.GetValue<string>("SMTP_Username");
             string smtpPassword = _configuration.GetValue<string>("SMTP_Password");
 
