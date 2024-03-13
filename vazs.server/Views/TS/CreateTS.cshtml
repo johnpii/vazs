@@ -1,0 +1,90 @@
+﻿@model vazs.server.Models.TSModel
+
+@{
+    ViewData["Title"] = "CreateTS";
+}
+
+<script>
+    function createTS() {
+        var ts = {
+            Name: document.getElementById("Name").value,
+            Description: document.getElementById("Description").value,
+            CreationDate: document.getElementById("CreationDate").value,
+            Deadline: document.getElementById("Deadline").value,
+            Budget: document.getElementById("Budget").value,
+            ClientID: document.getElementById("ClientID").value
+        };
+
+        fetch('/TS/CreateTS', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(ts)
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Успешно создано
+                    alert("TS создан успешно");
+                } else {
+                    // Ошибка
+                    alert("Ошибка при создании TS");
+                }
+            })
+            .catch(error => console.log(error));
+    }
+</script>
+
+
+<h1>CreateTS</h1>
+
+<h4>TSModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreationDate" class="control-label"></label>
+                <input asp-for="CreationDate" class="form-control" />
+                <span asp-validation-for="CreationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Deadline" class="control-label"></label>
+                <input asp-for="Deadline" class="form-control" />
+                <span asp-validation-for="Deadline" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Budget" class="control-label"></label>
+                <input asp-for="Budget" class="form-control" />
+                <span asp-validation-for="Budget" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClientID" class="control-label"></label>
+                <input asp-for="ClientID" class="form-control" />
+                <span asp-validation-for="ClientID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" onclick="createTS()">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

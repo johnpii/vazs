@@ -15,7 +15,13 @@ namespace vazs.server.Controllers
             _firebaseClient = firebaseClient;
         }
 
-        [HttpGet("[controller]/Ts")]
+        [HttpGet("[controller]/CreateTS")]
+        public IActionResult CreateTS() 
+        {
+            return View();
+        }
+
+        [HttpGet("[controller]/")]
         public async Task<ActionResult> TSs()
         {
             try
@@ -32,7 +38,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpGet("[controller]/Ts/{uid}")]
+        [HttpGet("[controller]/{uid}")]
         public async Task<ActionResult> GetTS(string uid)
         {
             try
@@ -57,7 +63,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Ts/Create")]
+        [HttpPost("TS/CreateTS")]
         public async Task<ActionResult> CreateTS([FromBody] TSModel ts)
         {
             try
