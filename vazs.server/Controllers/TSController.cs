@@ -80,7 +80,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Ts/Update/{uid}")]
+        [HttpPost("[controller]/Update/{uid}")]
         public async Task<ActionResult> UpdateTS(string uid, [FromBody] TSModel ts)
         {
             try
@@ -116,7 +116,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Ts/Delete/{uid}")]
+        [HttpPost("[controller]/Delete/{uid}")]
         public async Task<ActionResult> DeleteTS(string uid)
         {
             try
