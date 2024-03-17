@@ -168,7 +168,7 @@ namespace vazs.server.Controllers
                     {
                         new Claim(ClaimsIdentity.DefaultNameClaimType, userData.DisplayName),
                         new Claim(ClaimTypes.Email, userData.Email),
-                        new Claim("uid", uid)
+                        new Claim("clientUID", uid)
                     };
 
                     if (userData.CustomClaims != null && userData.CustomClaims.TryGetValue("role", out var roleValue))

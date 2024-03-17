@@ -1,6 +1,7 @@
 ﻿using Firebase.Database;
 using Firebase.Database.Query;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using vazs.server.Models;
 
 namespace vazs.server.Controllers
@@ -16,9 +17,34 @@ namespace vazs.server.Controllers
         }
 
         [HttpGet("[controller]/CreateTS")]
-        public IActionResult CreateTS() 
+        public IActionResult CreateTS()
         {
             return View();
+        }
+
+        [HttpGet("[controller]/UpdateTS/{uid}")]
+        public async Task<IActionResult> UpdateTS(string uid)
+        {
+            try
+            {
+                var ts = await _firebaseClient
+                    .Child("ts")
+                    .Child(uid)
+                    .OnceSingleAsync<TSModel>();
+
+                if (ts != null)
+                {
+                    return View(ts);
+                }
+                else
+                {
+                    return NotFound(); // Если ТЗ с указанным ID не найдено
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("[controller]/")]
@@ -28,6 +54,8 @@ namespace vazs.server.Controllers
             {
                 var tsList = await _firebaseClient
                     .Child("ts")
+                    .OrderBy("ClientID")
+                    .EqualTo(HttpContext.User.FindFirstValue("clientUID"))
                     .OnceAsync<TSModel>();
 
                 return Ok(tsList);
@@ -80,8 +108,8 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Update/{uid}")]
-        public async Task<ActionResult> UpdateTS(string uid, [FromBody] TSModel ts)
+        [HttpPost("[controller]/UpdateTS/{uid}")]
+        public async Task<ActionResult> UpdateTS(string uid, TSModel ts)
         {
             try
             {
@@ -116,7 +144,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Delete/{uid}")]
+        [HttpPost("[controller]/DeleteTS/{uid}")]
         public async Task<ActionResult> DeleteTS(string uid)
         {
             try
