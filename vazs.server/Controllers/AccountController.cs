@@ -32,7 +32,7 @@ namespace vazs.server.Controllers
                 AuthDomain = _configuration.GetValue<string>("AuthDomain"),
                 Providers = new FirebaseAuthProvider[]
                 {
-                    // Add and configure individual providers
+                    // Провайдеры
                     new GoogleProvider().AddScopes("email"),
                     new EmailProvider()
                      // ...
@@ -75,13 +75,14 @@ namespace vazs.server.Controllers
                 // Отправка письма с ссылкой для подтверждения почты
                 SendConfirmationEmail(user.Email, emailActionLink, user.Username);
 
-                return RedirectToAction("Login", "Account");
+                ViewBag.ConfirmationMessage = "На вашу почту было отправлено письмо с подтверждением";
+                return View();
             }
             catch (Exception ex)
             {
                 if (ex.Message.Contains("EMAIL_EXISTS"))
                 {
-                    ViewBag.Error = "Пользователь с такой почтой уже существует !";
+                    ViewBag.Error = "Пользователь с такой почтой уже существует!";
                     return View();
                 }
                 else
@@ -90,6 +91,7 @@ namespace vazs.server.Controllers
                 }
             }
         }
+
 
         private void SendConfirmationEmail(string recipientEmail, string confirmationLink, string username)
         {

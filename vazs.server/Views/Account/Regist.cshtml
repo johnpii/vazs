@@ -3,6 +3,41 @@
 @{
     ViewData["Title"] = "Regist";
 }
+<style>
+    .confirmation-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .confirmation-modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .confirmation-modal-message {
+        margin-bottom: 20px;
+    }
+</style>
+@if (ViewBag.ConfirmationMessage != null)
+{
+    <div class="confirmation-modal">
+        <div class="confirmation-modal-content">
+            <h3 class="confirmation-modal-message">@ViewBag.ConfirmationMessage</h3>
+            <button class="btn btn-primary" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+}
 
 <h1 align="center">Регистрация</h1>
 <hr />
@@ -38,7 +73,12 @@
     </div>
 </div>
 
-
+<script>
+    function closeModal() {
+        var modal = document.querySelector('.confirmation-modal');
+        modal.style.display = 'none';
+    }
+</script>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
