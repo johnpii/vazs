@@ -1,11 +1,13 @@
 ﻿using Firebase.Database;
 using Firebase.Database.Query;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using vazs.server.Models;
 
 namespace vazs.server.Controllers
 {
+    [Authorize(Roles = "user")]
     public class TSController : Controller
     {
 
@@ -16,8 +18,8 @@ namespace vazs.server.Controllers
             _firebaseClient = firebaseClient;
         }
 
-        [HttpGet("[controller]/CreateTS")]
-        public IActionResult CreateTS()
+        [HttpGet("[controller]/CreateTS/{DepartmentName}")]
+        public IActionResult CreateTS(string DepartmentName)
         {
             return View();
         }
@@ -91,11 +93,24 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("TS/CreateTS")]
-        public async Task<ActionResult> CreateTS([FromBody] TSModel ts)
+        [HttpPost]
+        public async Task<ActionResult> CreateTS(TSModel ts)
         {
             try
             {
+                if (ts.Document != null && ts.Document.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await ts.Document.CopyToAsync(memoryStream);
+                        ts.Document = new FormFile(memoryStream, 0, memoryStream.Length, null, ts.Document.FileName)
+                        {
+                            Headers = new HeaderDictionary(),
+                            ContentType = "application/*"
+                        };
+                    }
+                }
+
                 await _firebaseClient
                     .Child("ts")
                     .PostAsync(ts);

@@ -2,6 +2,7 @@
 using Firebase.Database.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using vazs.server.ViewModels;
 using vazs.server.Models;
 
 namespace vazs.server.Controllers
@@ -19,29 +20,19 @@ namespace vazs.server.Controllers
         {
             try
             {
-                var collections = await _firebaseClient
-                    .Child("/")
-                    .OnceAsync<object>();
-
-                var collectionNames = collections.Select(c => c.Key);
-
-                return Ok(collectionNames);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpGet("[controller]/Departments")]
-        public async Task<ActionResult> Departments()
-        {
-            try
-            {
                 var departments = await _firebaseClient
                 .Child("departments")
-                .OnceAsync<DepartmentModel>();
+                .OnceAsync<Department>();
 
-                return Ok(departments);
+                var departmentList = departments.Select(d => new DepartmentWithId
+                {
+                    Id = d.Key,
+                    Name = d.Object.Name,
+                    Description = d.Object.Description,
+                    Image = d.Object.Image
+                }).ToList();
+
+                return View(departmentList);
             }
             catch (Exception ex)
             {
@@ -49,7 +40,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpGet("[controller]/Departments/{uid}")]
+        [HttpGet]
         public async Task<ActionResult> GetDepartment(string uid)
         {
             try
@@ -57,7 +48,7 @@ namespace vazs.server.Controllers
                 var department = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<DepartmentModel>();
+                    .OnceSingleAsync<Department>();
 
                 if (department != null)
                 {
@@ -74,44 +65,54 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Departments/Create")]
-        public async Task<ActionResult> CreateDepartment([FromBody] DepartmentModel department)
+        public ActionResult CreateDepartment()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateDepartment(DepartmentModel department)
         {
             try
             {
+                Department depart = new Department();
+                depart.Name = department.Name;
+                depart.Description = department.Description;
+                using (var memoryStream = new MemoryStream())
+                {
+                    department.Image.CopyTo(memoryStream);
+                    depart.Image = memoryStream.ToArray();
+                }
                 await _firebaseClient
                     .Child("departments")
-                    .PostAsync(department);
+                    .PostAsync(depart);
 
-                return Ok();
+                return RedirectToAction("Index", "Admin");
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPost("[controller]/Departments/Update/{uid}")]
-        public async Task<ActionResult> UpdateDepartment(string uid, [FromBody] DepartmentModel department)
+        [HttpGet("[controller]/UpdateDepartment/{uid}")]
+        public async Task<ActionResult> UpdateDepartment(string uid)
         {
-            try
+            try 
             {
-                var departmentToUpdate = await _firebaseClient
+                var department = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<DepartmentModel>();
+                    .OnceSingleAsync<Department>();
 
-                if (departmentToUpdate != null)
+                if (department != null)
                 {
-                    departmentToUpdate.Name = department.Name;
-                    departmentToUpdate.Description = department.Description;
+                    var departmentModel = new DepartmentModel
+                    {
+                        Name = department.Name,
+                        Description = department.Description
+                    };
 
-                    await _firebaseClient
-                        .Child("departments")
-                        .Child(uid)
-                        .PutAsync(departmentToUpdate);
-
-                    return Ok();
+                    return View(departmentModel);
                 }
                 else
                 {
@@ -124,15 +125,86 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost("[controller]/Departments/Delete/{uid}")]
+        [HttpPost("[controller]/UpdateDepartment/{uid}")]
+        public async Task<ActionResult> UpdateDepartment(string uid, DepartmentModel department)
+        {
+            try
+            {
+                var departmentToUpdate = await _firebaseClient
+                    .Child("departments")
+                    .Child(uid)
+                    .OnceSingleAsync<Department>();
+
+                if (departmentToUpdate != null)
+                {
+                    departmentToUpdate.Name = department.Name;
+                    departmentToUpdate.Description = department.Description;
+                    if (department.Image != null)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            department.Image.CopyTo(memoryStream);
+                            departmentToUpdate.Image = memoryStream.ToArray();
+                        }
+                    }
+                    await _firebaseClient
+                        .Child("departments")
+                        .Child(uid)
+                        .PutAsync(departmentToUpdate);
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return NotFound(); // Если департамент с указанным ID не найден
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("[controller]/DeleteDepartment/{uid}")]
         public async Task<ActionResult> DeleteDepartment(string uid)
+        {
+            try
+            {
+                var department = await _firebaseClient
+                    .Child("departments")
+                    .Child(uid)
+                    .OnceSingleAsync<Department>();
+
+                if (department != null)
+                {
+                    var departmentModel = new Department
+                    {
+                        Name = department.Name,
+                        Description = department.Description,
+                        Image = department.Image
+                    };
+
+                    return View(departmentModel);
+                }
+                else
+                {
+                    return NotFound(); // Если департамент с указанным ID не найден
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("[controller]/DeleteDepartment/{uid}")]
+        public async Task<ActionResult> DeleteDepartmentPost(string uid)
         {
             try
             {
                 var departmentToDelete = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<DepartmentModel>();
+                    .OnceSingleAsync<Department>();
 
                 if (departmentToDelete != null)
                 {
@@ -141,7 +213,7 @@ namespace vazs.server.Controllers
                         .Child(uid)
                         .DeleteAsync();
 
-                    return Ok();
+                    return RedirectToAction("Index", "Admin");
                 }
                 else
                 {

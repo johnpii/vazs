@@ -75,11 +75,19 @@ namespace vazs.server.Controllers
                 // Отправка письма с ссылкой для подтверждения почты
                 SendConfirmationEmail(user.Email, emailActionLink, user.Username);
 
-                return Ok();
+                return RedirectToAction("Login", "Account");
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.Message.Contains("EMAIL_EXISTS"))
+                {
+                    ViewBag.Error = "Пользователь с такой почтой уже существует !";
+                    return View();
+                }
+                else
+                {
+                    return BadRequest(ex.Message);
+                }
             }
         }
 
@@ -148,8 +156,20 @@ namespace vazs.server.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl)
         {
+            if (returnUrl != null)
+            {
+                var options = new CookieOptions
+                {
+                    MaxAge = TimeSpan.FromMinutes(5),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                };
+
+                Response.Cookies.Append("returnUrl", returnUrl, options);
+            }
             return View();
         }
 
@@ -180,20 +200,30 @@ namespace vazs.server.Controllers
                     var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
                     var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                     await HttpContext.SignInAsync(claimsPrincipal);
-                    return Ok();
+                    var returnUrl = Request.Cookies["returnUrl"];
+                    Response.Cookies.Delete("returnUrl");
+                    return Redirect(returnUrl ?? "/");
                 }
                 return BadRequest();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.Message.Contains("INVALID_LOGIN_CREDENTIALS"))
+                {
+                    ViewBag.Error = "Пользователь не найден или не правильно введены данные !";
+                    return View();
+                }
+                else
+                {
+                    return BadRequest(ex.Message);
+                }
             }
         }
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

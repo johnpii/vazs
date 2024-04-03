@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using vazs.server.Models;
+using vazs.server.ViewModels;
 
 namespace vazs.server.Controllers
 {
@@ -22,19 +23,21 @@ namespace vazs.server.Controllers
             {
                 var departments = await _firebaseClient
                 .Child("departments")
-                .OnceAsync<DepartmentModel>();
+                .OnceAsync<Department>();
 
-                return Ok(departments);
+                var departmentList = departments.Select(d => new Department
+                {
+                    Name = d.Object.Name,
+                    Description = d.Object.Description,
+                    Image = d.Object.Image
+                }).ToList();
+
+                return View(departmentList);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Login";
         options.ExpireTimeSpan = ConfigurationHelper.expireTimeCookie;
     });
 // Добавляем сервис FirebaseClient

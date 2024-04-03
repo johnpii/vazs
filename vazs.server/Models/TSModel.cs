@@ -7,6 +7,8 @@
         public DateTime CreationDate { get; set; }
         public DateTime Deadline { get; set; }
         public decimal Budget { get; set; }
+        public IFormFile Document { get; set; }
         public string ClientID { get; set; }
+        public string DepartmentName { get; set; }
     }
 }

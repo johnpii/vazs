@@ -4,35 +4,60 @@
     ViewData["Title"] = "Login";
 }
 
-<h1>Login</h1>
+<script>
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById("Password");
+        var togglePasswordIcon = document.getElementById("toggle-password");
 
-<h4>LoginModel</h4>
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            togglePasswordIcon.className = "bi bi-eye";
+        } else {
+            passwordInput.type = "password";
+            togglePasswordIcon.className = "bi bi-eye-slash";
+        }
+    }
+</script>
+
+<h1 align="center">Вход</h1>
 <hr />
-<div class="row">
+<div class="row d-flex justify-content-center">
     <div class="col-md-4">
         <form asp-action="Login">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.Error
+                </div>
+            }
+            <div class="form-group mt-2 mb-2">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+            <label asp-for="Password" class="control-label">Пароль</label>
+            <div class="input-group">
+                <input asp-for="Password" type="password" class="form-control" id="Password" />
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary" onclick="togglePasswordVisibility()" type="button">
+                        <i class="bi bi-eye-slash" id="toggle-password"></i>
+                    </button>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+            <div class="form-group mt-2" align="center">
+                <input type="submit" value="Log In" class="btn btn-primary" />
             </div>
         </form>
+        <div class="text-center">
+            <p>Не имеете аккаунта? <a href="/Account/Regist">Зарегистрируйтесь</a></p>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
