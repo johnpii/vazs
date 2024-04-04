@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using vazs.server.Models;
+using Firebase.Storage;
 
 namespace vazs.server.Controllers
 {
@@ -12,10 +13,14 @@ namespace vazs.server.Controllers
     {
 
         private readonly FirebaseClient _firebaseClient;
+        private readonly IConfiguration _configuration;
+        private readonly FirebaseStorage firebaseStorage;
 
-        public TSController(FirebaseClient firebaseClient)
+        public TSController(FirebaseClient firebaseClient, IConfiguration configuration)
         {
-            _firebaseClient = firebaseClient;
+            _firebaseClient = firebaseClient;            _configuration = configuration;
+            firebaseStorage = new FirebaseStorage(_configuration.GetValue<string>("Storage_Path"));
+
         }
 
         [HttpGet("[controller]/CreateTS/{DepartmentName}")]
@@ -98,24 +103,22 @@ namespace vazs.server.Controllers
         {
             try
             {
-                if (ts.Document != null && ts.Document.Length > 0)
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await ts.Document.CopyToAsync(memoryStream);
-                        ts.Document = new FormFile(memoryStream, 0, memoryStream.Length, null, ts.Document.FileName)
-                        {
-                            Headers = new HeaderDictionary(),
-                            ContentType = "application/*"
-                        };
-                    }
-                }
+                var stream = ts.Document.OpenReadStream();
+                string extension = Path.GetExtension(ts.Document.FileName);
 
-                await _firebaseClient
+                ts.Document = null;
+                // Загружаем информацию о TS в Firebase Realtime Database
+                var postResponse = await _firebaseClient.Child("ts").PostAsync(ts);
+
+                string fileName = postResponse.Key;
+
+                // Загружаем изображение в Firebase Storage
+                var response = await firebaseStorage
                     .Child("ts")
-                    .PostAsync(ts);
+                    .Child(fileName + extension)
+                    .PutAsync(stream);
 
-                return Ok();
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
