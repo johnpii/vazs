@@ -7,7 +7,7 @@ using vazs.server.Models;
 
 namespace vazs.server.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "user")]
     public class AdminController : Controller
     {
         private readonly FirebaseClient _firebaseClient;

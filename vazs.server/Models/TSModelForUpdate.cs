@@ -2,7 +2,7 @@
 
 namespace vazs.server.Models
 {
-    public class TSModel
+    public class TSModelForUpdate
     {
         [Required(ErrorMessage = "Это поле обязательно")]
         public string Name { get; set; }
@@ -11,19 +11,10 @@ namespace vazs.server.Models
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Это поле обязательно")]
-        public DateTime CreationDate { get; set; }
-
-        [Required(ErrorMessage = "Это поле обязательно")]
         public DateTime Deadline { get; set; }
 
         [Required(ErrorMessage = "Это поле обязательно")]
-        public decimal Budget { get; set; }
+        public int Budget { get; set; }
         public IFormFile? Document { get; set; }
-
-        [Required(ErrorMessage = "Это поле обязательно")]
-        public string ClientID { get; set; }
-
-        [Required(ErrorMessage = "Это поле обязательно")]
-        public string DepartmentName { get; set; }
     }
 }

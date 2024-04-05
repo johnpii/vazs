@@ -18,7 +18,8 @@ namespace vazs.server.Controllers
 
         public TSController(FirebaseClient firebaseClient, IConfiguration configuration)
         {
-            _firebaseClient = firebaseClient;            _configuration = configuration;
+            _firebaseClient = firebaseClient;
+            _configuration = configuration;
             firebaseStorage = new FirebaseStorage(_configuration.GetValue<string>("Storage_Path"));
 
         }
@@ -37,7 +38,7 @@ namespace vazs.server.Controllers
                 var ts = await _firebaseClient
                     .Child("ts")
                     .Child(uid)
-                    .OnceSingleAsync<TSModel>();
+                    .OnceSingleAsync<TSModelForUpdate>();
 
                 if (ts != null)
                 {
@@ -54,7 +55,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpGet("[controller]/")]
+        [HttpGet("[controller]/TSs")]
         public async Task<ActionResult> TSs()
         {
             try
@@ -63,9 +64,32 @@ namespace vazs.server.Controllers
                     .Child("ts")
                     .OrderBy("ClientID")
                     .EqualTo(HttpContext.User.FindFirstValue("clientUID"))
-                    .OnceAsync<TSModel>();
+                    .OnceAsync<TSModelForIndex>();
 
-                return Ok(tsList);
+                // Получаем ссылки на файлы из Firebase Storage и добавляем их в соответствующие модели TS
+                foreach (var ts in tsList)
+                {
+                    // Получаем ссылку на файл в Firebase Storage
+                    var storageClient = firebaseStorage.Child("ts").Child(ts.Key + ".docx");
+                    var downloadUrl = await storageClient.GetDownloadUrlAsync();
+
+                    // Добавляем ссылку на файл в модель TS
+                    ts.Object.DownloadUrl = downloadUrl.ToString();
+                }
+
+                var tsListToView = tsList.Select(d => new TSModelForIndex
+                {
+                    Id = d.Key,
+                    Name = d.Object.Name,
+                    Description = d.Object.Description,
+                    CreationDate = d.Object.CreationDate,
+                    Deadline = d.Object.Deadline,
+                    Budget = d.Object.Budget,
+                    DepartmentName = d.Object.DepartmentName,
+                    DownloadUrl = d.Object.DownloadUrl
+                    }).ToList();
+
+                return View(tsListToView);
             }
             catch (Exception ex)
             {
@@ -81,7 +105,7 @@ namespace vazs.server.Controllers
                 var ts = await _firebaseClient
                     .Child("ts")
                     .Child(uid)
-                    .OnceSingleAsync<TSModel>();
+                    .OnceSingleAsync<TSModelForCreate>();
 
                 if (ts != null)
                 {
@@ -99,7 +123,7 @@ namespace vazs.server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateTS(TSModel ts)
+        public async Task<ActionResult> CreateTS(TSModelForCreate ts)
         {
             try
             {
@@ -127,14 +151,14 @@ namespace vazs.server.Controllers
         }
 
         [HttpPost("[controller]/UpdateTS/{uid}")]
-        public async Task<ActionResult> UpdateTS(string uid, TSModel ts)
+        public async Task<ActionResult> UpdateTS(string uid, TSModelForCreate ts)
         {
             try
             {
                 var tsToUpdate = await _firebaseClient
                     .Child("ts")
                     .Child(uid)
-                    .OnceSingleAsync<TSModel>();
+                    .OnceSingleAsync<TSModelForCreate>();
 
                 if (tsToUpdate != null)
                 {
@@ -149,7 +173,7 @@ namespace vazs.server.Controllers
                         .Child(uid)
                         .PutAsync(tsToUpdate);
 
-                    return Ok();
+                    return RedirectToAction("TSs", "TS");
                 }
                 else
                 {
@@ -170,7 +194,7 @@ namespace vazs.server.Controllers
                 var tsToDelete = await _firebaseClient
                     .Child("ts")
                     .Child(uid)
-                    .OnceSingleAsync<TSModel>();
+                    .OnceSingleAsync<TSModelForCreate>();
 
                 if (tsToDelete != null)
                 {

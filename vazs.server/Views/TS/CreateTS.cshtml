@@ -1,4 +1,4 @@
-﻿@model vazs.server.Models.TSModel
+﻿@model vazs.server.Models.TSModelForCreate
 
 @{
     ViewData["Title"] = "CreateTS";
@@ -25,12 +25,12 @@
                 <input type="hidden" asp-for="CreationDate" class="form-control" value=@DateTime.Now />
             </div>
             <div class="form-group">
-                <label asp-for="Deadline" class="control-label">Крайний срок</label>
+                <label asp-for="Deadline" class="control-label">Дата окончания работ</label>
                 <input asp-for="Deadline" class="form-control" />
                 <span asp-validation-for="Deadline" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Budget" class="control-label">Бюджет</label>
+                <label asp-for="Budget" class="control-label">Бюджет (&#x20bd)</label>
                 <input asp-for="Budget" class="form-control" />
                 <span asp-validation-for="Budget" class="text-danger"></span>
             </div>
