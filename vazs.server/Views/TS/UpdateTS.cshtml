@@ -1,16 +1,21 @@
-﻿@model vazs.server.Models.TSModelForUpdate
+﻿@model vazs.server.ViewModels.TSViewModelForUpdate
 
 @{
     ViewData["Title"] = "UpdateTS";
 }
 
-<h1>UpdateTS</h1>
+<div class="text-left">
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Обратно к списку
+    </a>
+</div>
 
-<h4>TSModel</h4>
+<h1>Редактирование технического задания</h1>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="UpdateTS">
+        <form asp-action="UpdateTS" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label">Название</label>
@@ -38,14 +43,10 @@
                 <span id="fileError" asp-validation-for="Document" class="text-danger"></span>
             </div>
             <div class="form-group mt-2">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

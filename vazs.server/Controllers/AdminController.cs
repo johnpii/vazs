@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using vazs.server.ViewModels;
 using vazs.server.Models;
+using Firebase.Storage;
 
 namespace vazs.server.Controllers
 {
@@ -11,10 +12,12 @@ namespace vazs.server.Controllers
     public class AdminController : Controller
     {
         private readonly FirebaseClient _firebaseClient;
+        private readonly FirebaseStorage _firebaseStorage;
 
-        public AdminController(FirebaseClient firebaseClient)
+        public AdminController(FirebaseClient firebaseClient, FirebaseStorage firebaseStorage)
         {
             _firebaseClient = firebaseClient;
+            _firebaseStorage = firebaseStorage;
         }
         public async Task<ActionResult> Index()
         {

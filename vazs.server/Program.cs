@@ -1,5 +1,7 @@
 using Firebase.Database;
+using Firebase.Storage;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.DotNet.Scaffolding.Shared;
 using vazs.server.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,12 @@ builder.Services.AddSingleton<FirebaseClient>(provider =>
     {
         AuthTokenAsyncFactory = () => Task.FromResult(configuration.GetValue<string>("Firebase_Database_Secret"))
     });
+});
+
+builder.Services.AddSingleton<FirebaseStorage>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new FirebaseStorage(configuration.GetValue<string>("Storage_Path"));
 });
 
 // Add services to the container.

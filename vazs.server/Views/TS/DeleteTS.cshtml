@@ -1,0 +1,66 @@
+﻿@model vazs.server.Models.TSModelForDelete
+
+@{
+    ViewData["Title"] = "DeleteTS";
+}
+
+<div class="text-left">
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Обратно к списку
+    </a>
+</div>
+
+<h1>Удаление технического задания</h1>
+
+<h3>Вы уверены что хотите удалить это техническое задание?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Название
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            Описание
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            Дата создания
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+        <dt class = "col-sm-2">
+            Дата окончания работ
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Deadline)
+        </dd>
+        <dt class = "col-sm-2">
+            Бюджет
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Budget)
+        </dd>
+        <dt class = "col-sm-2">
+            Название отдела разработки
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DepartmentName)
+        </dd>
+        <dt class = "col-sm-2">
+            Ссылка на документ
+        </dt>
+        <dd class = "col-sm-10">
+            <a href="@Model.DownloadUrl" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i>@Model.DocumentExt</a>
+        </dd>
+    </dl>
+    
+    <form asp-action="DeleteTS">
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+    </form>
+</div>
