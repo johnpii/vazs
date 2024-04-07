@@ -40,7 +40,7 @@
                 <span id="fileError" asp-validation-for="Document" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="hidden" asp-for="ClientID" value=@User.FindFirst("clientUID").Value />
+                <input type="hidden" asp-for="ClientEmail" value=@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value />
             </div>
             <div class="form-group">
                 <input type="hidden" asp-for="DepartmentName" value="@ViewContext.RouteData.Values["DepartmentName"]" />

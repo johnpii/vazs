@@ -22,7 +22,7 @@ namespace vazs.server.ViewModels
         public string? DocumentExt { get; set; }
 
         [Required(ErrorMessage = "Это поле обязательно")]
-        public string ClientID { get; set; }
+        public string ClientEmail { get; set; }
 
         [Required(ErrorMessage = "Это поле обязательно")]
         public string DepartmentName { get; set; }

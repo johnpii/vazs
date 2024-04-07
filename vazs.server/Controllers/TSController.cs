@@ -6,6 +6,7 @@ using System.Security.Claims;
 using vazs.server.Models;
 using Firebase.Storage;
 using vazs.server.ViewModels;
+using System.Linq;
 
 namespace vazs.server.Controllers
 {
@@ -29,15 +30,14 @@ namespace vazs.server.Controllers
             {
                 var tsList = await _firebaseClient
                     .Child("ts")
-                    .OrderBy("ClientID")
-                    .EqualTo(HttpContext.User.FindFirstValue("clientUID"))
+                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .OnceAsync<TSModelForDelete>();
 
                 // Получаем ссылки на файлы из Firebase Storage и добавляем их в соответствующие модели TS
                 foreach (var ts in tsList)
                 {
                     // Получаем ссылку на файл в Firebase Storage
-                    var storageClient = _firebaseStorage.Child("ts").Child(ts.Key + ts.Object.DocumentExt);
+                    var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(ts.Key + ts.Object.DocumentExt);
                     var downloadUrl = await storageClient.GetDownloadUrlAsync();
 
                     // Добавляем ссылку на файл в модель TS
@@ -71,6 +71,36 @@ namespace vazs.server.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<ActionResult> CreateTS(TSViewModelForCreate ts)
+        {
+            try
+            {
+                var stream = ts.Document.OpenReadStream();
+                string extension = Path.GetExtension(ts.Document.FileName);
+
+                ts.Document = null;
+                ts.DocumentExt = extension;
+                // Загружаем информацию о TS в Firebase Realtime Database
+                var postResponse = await _firebaseClient.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).PostAsync(ts);
+
+                string fileName = postResponse.Key;
+
+                // Загружаем изображение в Firebase Storage
+                await _firebaseStorage
+                    .Child("ts")
+                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
+                    .Child(fileName + extension)
+                    .PutAsync(stream);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("[controller]/UpdateTS/{uid}")]
         public async Task<IActionResult> UpdateTS(string uid)
         {
@@ -78,6 +108,7 @@ namespace vazs.server.Controllers
             {
                 var ts = await _firebaseClient
                     .Child("ts")
+                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .Child(uid)
                     .OnceSingleAsync<TSViewModelForUpdate>();
 
@@ -96,35 +127,6 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult> CreateTS(TSViewModelForCreate ts)
-        {
-            try
-            {
-                var stream = ts.Document.OpenReadStream();
-                string extension = Path.GetExtension(ts.Document.FileName);
-
-                ts.Document = null;
-                ts.DocumentExt = extension;
-                // Загружаем информацию о TS в Firebase Realtime Database
-                var postResponse = await _firebaseClient.Child("ts").PostAsync(ts);
-
-                string fileName = postResponse.Key;
-
-                // Загружаем изображение в Firebase Storage
-                await _firebaseStorage
-                    .Child("ts")
-                    .Child(fileName + extension)
-                    .PutAsync(stream);
-
-                return RedirectToAction("Index", "Home");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpPost("[controller]/UpdateTS/{uid}")]
         public async Task<ActionResult> UpdateTS(string uid, TSViewModelForUpdate ts)
         {
@@ -133,6 +135,7 @@ namespace vazs.server.Controllers
                 // Получаем данные о TS для обновления
                 var tsToUpdate = await _firebaseClient
                     .Child("ts")
+                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .Child(uid)
                     .OnceSingleAsync<TSModelForDatabase>();
 
@@ -148,6 +151,7 @@ namespace vazs.server.Controllers
                         // Удаляем старое изображение из Firebase Storage
                         await _firebaseStorage
                             .Child("ts")
+                            .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                             .Child(fileNamePrev)
                             .DeleteAsync();
 
@@ -155,6 +159,7 @@ namespace vazs.server.Controllers
                         // Загружаем новое изображение в Firebase Storage
                         await _firebaseStorage
                             .Child("ts")
+                            .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                             .Child(fileNamePres)
                             .PutAsync(stream);
 
@@ -170,6 +175,7 @@ namespace vazs.server.Controllers
                     // Обновляем данные TS в Firebase Realtime Database
                     await _firebaseClient
                         .Child("ts")
+                        .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                         .Child(uid)
                         .PutAsync(tsToUpdate);
 
@@ -191,11 +197,12 @@ namespace vazs.server.Controllers
         {
             var ts = await _firebaseClient
                     .Child("ts")
+                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .Child(uid)
                     .OnceSingleAsync<TSModelForDelete>();
             if (ts != null)
             {
-                var storageClient = _firebaseStorage.Child("ts").Child(uid + ts.DocumentExt);
+                var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(uid + ts.DocumentExt);
                 var downloadUrl = await storageClient.GetDownloadUrlAsync();
 
                 // Добавляем ссылку на файл в модель TS
@@ -215,6 +222,7 @@ namespace vazs.server.Controllers
             {
                 var tsToDelete = await _firebaseClient
                     .Child("ts")
+                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .Child(uid)
                     .OnceSingleAsync<TSModelForDatabase>();
 
@@ -222,6 +230,7 @@ namespace vazs.server.Controllers
                 {
                     await _firebaseClient
                         .Child("ts")
+                        .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                         .Child(uid)
                         .DeleteAsync();
 
@@ -230,6 +239,7 @@ namespace vazs.server.Controllers
                     // Удаляем старое изображение из Firebase Storage
                     await _firebaseStorage
                         .Child("ts")
+                        .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                         .Child(fileName)
                         .DeleteAsync();
 

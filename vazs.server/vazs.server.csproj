@@ -17,4 +17,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\html\confirmation_email_template.html" />
+  </ItemGroup>
+
 </Project>

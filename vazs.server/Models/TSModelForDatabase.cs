@@ -8,7 +8,7 @@
         public DateTime Deadline { get; set; }
         public int Budget { get; set; }
         public string? DocumentExt { get; set; }
-        public string ClientID { get; set; }
+        public string ClientEmail { get; set; }
         public string DepartmentName { get; set; }
     }
 }
