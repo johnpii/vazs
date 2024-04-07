@@ -1,15 +1,8 @@
-﻿using ElasticEmail.Api;
-using ElasticEmail.Client;
-using ElasticEmail.Model;
-using Firebase.Auth;
-using Firebase.Auth.Providers;
-using FirebaseAdmin;
+﻿using Firebase.Auth;
 using FirebaseAdmin.Auth;
-using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
@@ -19,37 +12,13 @@ namespace vazs.server.Controllers
 {
     public class AccountController : Controller
     {
-        private static bool firebaseAppCreated = false;
-
         private readonly IConfiguration _configuration;
 
-        FirebaseAuthClient client;
-        public AccountController(IConfiguration configuration)
+        private readonly FirebaseAuthClient client;
+        public AccountController(IConfiguration configuration, FirebaseAuthClient firebaseAuthClient)
         {
+            client = firebaseAuthClient;
             _configuration = configuration;
-            FirebaseAuthConfig config = new FirebaseAuthConfig
-            {
-                ApiKey = _configuration.GetValue<string>("Api_Key"),
-                AuthDomain = _configuration.GetValue<string>("AuthDomain"),
-                Providers = new FirebaseAuthProvider[]
-                {
-                    // Провайдеры
-                    new GoogleProvider().AddScopes("email"),
-                    new EmailProvider()
-                     // ...
-                }
-            };
-
-            client = new FirebaseAuthClient(config);
-
-            if (!firebaseAppCreated)
-            {
-                FirebaseApp.Create(new AppOptions
-                {
-                    Credential = GoogleCredential.FromFile(@"firebase_auth.json")
-                });
-                firebaseAppCreated = true;
-            }
         }
 
         [HttpGet]
@@ -208,27 +177,6 @@ namespace vazs.server.Controllers
             else
             {
                 return BadRequest("Подтвердите вашу почту, чтобы завершить регистрацию.");
-            }
-        }
-
-        [HttpGet("[controller]/[action]/{uid}")]
-        public async Task<IActionResult> CheckRole(string uid)
-        {
-            try
-            {
-                var user = await FirebaseAuth.DefaultInstance.GetUserAsync(uid); // uid - идентификатор пользователя
-
-                // Проверка наличия роли
-                if (user.CustomClaims != null && user.CustomClaims.TryGetValue("role", out var roleValue))
-                {
-                    string role = roleValue?.ToString();
-                    return Ok(role);
-                }
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
             }
         }
     }

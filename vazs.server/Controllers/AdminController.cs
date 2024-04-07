@@ -19,6 +19,8 @@ namespace vazs.server.Controllers
             _firebaseClient = firebaseClient;
             _firebaseStorage = firebaseStorage;
         }
+
+        [HttpGet]
         public async Task<ActionResult> Index()
         {
             try
@@ -44,30 +46,6 @@ namespace vazs.server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetDepartment(string uid)
-        {
-            try
-            {
-                var department = await _firebaseClient
-                    .Child("departments")
-                    .Child(uid)
-                    .OnceSingleAsync<Department>();
-
-                if (department != null)
-                {
-                    return Ok(department);
-                }
-                else
-                {
-                    return NotFound(); // Если департамент с указанным ID не найден
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         public ActionResult CreateDepartment()
         {
             return View();

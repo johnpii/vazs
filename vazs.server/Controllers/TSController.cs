@@ -6,7 +6,6 @@ using System.Security.Claims;
 using vazs.server.Models;
 using Firebase.Storage;
 using vazs.server.ViewModels;
-using System.Linq;
 
 namespace vazs.server.Controllers
 {
@@ -23,7 +22,7 @@ namespace vazs.server.Controllers
             _firebaseStorage = firebaseStorage;
         }
 
-        [HttpGet("[controller]/Index")]
+        [HttpGet]
         public async Task<ActionResult> Index()
         {
             try
@@ -65,7 +64,7 @@ namespace vazs.server.Controllers
             }
         }
 
-        [HttpGet("[controller]/CreateTS/{DepartmentName}")]
+        [HttpGet]
         public IActionResult CreateTS(string DepartmentName)
         {
             return View();
@@ -144,8 +143,6 @@ namespace vazs.server.Controllers
                     // Если загружено новое изображение, обновляем его
                     if (ts.Document != null)
                     {
-                        var stream = ts.Document.OpenReadStream();
-                        string extension = Path.GetExtension(ts.Document.FileName);
                         string fileNamePrev = uid + tsToUpdate.DocumentExt;
 
                         // Удаляем старое изображение из Firebase Storage
@@ -155,6 +152,8 @@ namespace vazs.server.Controllers
                             .Child(fileNamePrev)
                             .DeleteAsync();
 
+                        var stream = ts.Document.OpenReadStream();
+                        string extension = Path.GetExtension(ts.Document.FileName);
                         string fileNamePres = uid + extension;
                         // Загружаем новое изображение в Firebase Storage
                         await _firebaseStorage

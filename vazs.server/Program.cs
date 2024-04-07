@@ -1,5 +1,9 @@
+using Firebase.Auth;
+using Firebase.Auth.Providers;
 using Firebase.Database;
 using Firebase.Storage;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.DotNet.Scaffolding.Shared;
 using vazs.server.Helpers;
@@ -27,6 +31,32 @@ builder.Services.AddSingleton<FirebaseStorage>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     return new FirebaseStorage(configuration.GetValue<string>("Storage_Path"));
+});
+
+builder.Services.AddSingleton<FirebaseAuthClient>(provider =>
+{
+    FirebaseAuthClient client;
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    FirebaseAuthConfig config = new FirebaseAuthConfig
+    {
+        ApiKey = configuration.GetValue<string>("Api_Key"),
+        AuthDomain = configuration.GetValue<string>("AuthDomain"),
+        Providers = new FirebaseAuthProvider[]
+                {
+                    // Провайдеры
+                    new GoogleProvider().AddScopes("email"),
+                    new EmailProvider()
+                     // ...
+                }
+    };
+    client = new FirebaseAuthClient(config);
+
+    FirebaseApp.Create(new AppOptions
+    {
+        Credential = GoogleCredential.FromFile(@"firebase_auth.json")
+    });
+
+    return client;
 });
 
 // Add services to the container.

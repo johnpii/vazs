@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using vazs.server.Models;
-using vazs.server.ViewModels;
 
 namespace vazs.server.Controllers
 {
@@ -17,6 +16,7 @@ namespace vazs.server.Controllers
             _firebaseClient = firebaseClient;
         }
 
+        [HttpGet]
         public async Task<ActionResult> Index()
         {
             try
