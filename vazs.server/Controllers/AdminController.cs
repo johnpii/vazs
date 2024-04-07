@@ -2,9 +2,8 @@
 using Firebase.Database.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using vazs.server.ViewModels;
 using vazs.server.Models;
-using Firebase.Storage;
+using vazs.server.ViewModels;
 
 namespace vazs.server.Controllers
 {
@@ -12,12 +11,10 @@ namespace vazs.server.Controllers
     public class AdminController : Controller
     {
         private readonly FirebaseClient _firebaseClient;
-        private readonly FirebaseStorage _firebaseStorage;
 
-        public AdminController(FirebaseClient firebaseClient, FirebaseStorage firebaseStorage)
+        public AdminController(FirebaseClient firebaseClient)
         {
             _firebaseClient = firebaseClient;
-            _firebaseStorage = firebaseStorage;
         }
 
         [HttpGet]
@@ -52,7 +49,7 @@ namespace vazs.server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateDepartment(DepartmentModel department)
+        public async Task<ActionResult> CreateDepartment(DepartmentModelForCreate department)
         {
             try
             {
@@ -78,7 +75,7 @@ namespace vazs.server.Controllers
         [HttpGet("[controller]/UpdateDepartment/{uid}")]
         public async Task<ActionResult> UpdateDepartment(string uid)
         {
-            try 
+            try
             {
                 var department = await _firebaseClient
                     .Child("departments")
@@ -87,7 +84,7 @@ namespace vazs.server.Controllers
 
                 if (department != null)
                 {
-                    var departmentModel = new DepartmentModel
+                    var departmentModel = new DepartmentModelForUpdate
                     {
                         Name = department.Name,
                         Description = department.Description
@@ -107,7 +104,7 @@ namespace vazs.server.Controllers
         }
 
         [HttpPost("[controller]/UpdateDepartment/{uid}")]
-        public async Task<ActionResult> UpdateDepartment(string uid, DepartmentModel department)
+        public async Task<ActionResult> UpdateDepartment(string uid, DepartmentModelForUpdate department)
         {
             try
             {

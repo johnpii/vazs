@@ -1,4 +1,4 @@
-﻿@model vazs.server.ViewModels.DepartmentModel
+﻿@model vazs.server.ViewModels.DepartmentModelForCreate
 
 @{
     ViewData["Title"] = "CreateDepartment";
@@ -43,10 +43,9 @@
             </div>
             <div class="form-group mt-2 mb-2">
                 <label asp-for="Image" class="control-label">Изображение</label>
-                <input id="imageInput" asp-for="Image" type="file" accept="image/*" class="form-control" onchange="previewImage(this);"
-                       data-val="true" data-val-required="Please select an image" />
+                <input asp-for="Image" type="file" accept="image/*" class="form-control" onchange="previewImage(this);"/>
                 <img id="imagePreview" src="" class="w-50 mt-1" asp-append-version="true">
-                <span id="imageError" class="text-danger"></span>
+                <span asp-validation-for="Image" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -55,20 +54,6 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById('saveButton').addEventListener('click', function (event) {
-        var inputFile = document.getElementById('imageInput');
-        var imageError = document.getElementById('imageError');
-
-        if (inputFile.files.length === 0) {
-            imageError.innerText = 'Это поле обязательно';
-            event.preventDefault(); // Останавливаем отправку формы
-        } else {
-            imageError.innerText = '';
-        }
-    });
-</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

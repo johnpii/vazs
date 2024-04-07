@@ -5,7 +5,6 @@ using Firebase.Storage;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.DotNet.Scaffolding.Shared;
 using vazs.server.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);

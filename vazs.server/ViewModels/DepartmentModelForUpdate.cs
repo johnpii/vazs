@@ -2,7 +2,7 @@
 
 namespace vazs.server.ViewModels
 {
-    public class DepartmentModel
+    public class DepartmentModelForUpdate
     {
         [Required(ErrorMessage = "Это поле обязательно")]
         public string Name { get; set; }

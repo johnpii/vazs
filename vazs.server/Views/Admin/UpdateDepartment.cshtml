@@ -1,4 +1,4 @@
-﻿@model vazs.server.ViewModels.DepartmentModel
+﻿@model vazs.server.ViewModels.DepartmentModelForUpdate
 
 @{
     ViewData["Title"] = "UpdateDepartment";
@@ -45,9 +45,9 @@
             </div>
             <div class="form-group mt-2 mb-2">
                 <label asp-for="Image" class="control-label">Изображение</label>
-                <input id="imageInput" asp-for="Image" type="file" accept="image/*" class="form-control" onchange="previewImage(this);" />
+                <input asp-for="Image" type="file" accept="image/*" class="form-control" onchange="previewImage(this);" />
                 <img id="imagePreview" src="" class="w-50 mt-1" asp-append-version="true">
-                <span id="imageError" asp-validation-for="Image" class="text-danger"></span>
+                <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="form-group mt-2">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
