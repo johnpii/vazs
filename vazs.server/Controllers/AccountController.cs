@@ -3,8 +3,7 @@ using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Net.Mail;
+using vazs.server.Services;
 using System.Security.Claims;
 using vazs.server.ViewModels;
 
@@ -12,13 +11,13 @@ namespace vazs.server.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IConfiguration _configuration;
 
-        private readonly FirebaseAuthClient client;
-        public AccountController(IConfiguration configuration, FirebaseAuthClient firebaseAuthClient)
+        private readonly FirebaseAuthClient _client;
+        private readonly EmailService _emailService;
+        public AccountController(FirebaseAuthClient firebaseAuthClient, EmailService emailService)
         {
-            client = firebaseAuthClient;
-            _configuration = configuration;
+            _client = firebaseAuthClient;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -32,7 +31,7 @@ namespace vazs.server.Controllers
         {
             try
             {
-                var userCredential = await client.CreateUserWithEmailAndPasswordAsync(user.Email, user.Password, user.Username);
+                var userCredential = await _client.CreateUserWithEmailAndPasswordAsync(user.Email, user.Password, user.Username);
 
                 await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(userCredential.User.Uid, new Dictionary<string, object>
                 {
@@ -43,7 +42,7 @@ namespace vazs.server.Controllers
                 var emailActionLink = await FirebaseAuth.DefaultInstance.GenerateEmailVerificationLinkAsync(user.Email);
 
                 // Отправка письма с ссылкой для подтверждения почты
-                SendConfirmationEmail(user.Email, emailActionLink, user.Username);
+                _emailService.SendConfirmationEmail(user.Email, emailActionLink, user.Username);
 
                 ViewBag.ConfirmationMessage = "На вашу почту было отправлено письмо с подтверждением";
                 return View();
@@ -85,7 +84,7 @@ namespace vazs.server.Controllers
         {
             try
             {
-                var userCredential = await client.SignInWithEmailAndPasswordAsync(user.Email, user.Password);
+                var userCredential = await _client.SignInWithEmailAndPasswordAsync(user.Email, user.Password);
                 string uid = userCredential.User.Uid;
                 if (!string.IsNullOrEmpty(uid))
                 {
@@ -130,54 +129,6 @@ namespace vazs.server.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
-        }
-
-        private void SendConfirmationEmail(string recipientEmail, string confirmationLink, string username)
-        {
-            // Настройки SMTP-сервера
-            string smtpHost = "smtp.gmail.com";
-            int smtpPort = 587;
-            string smtpUsername = _configuration.GetValue<string>("SMTP_Username");
-            string smtpPassword = _configuration.GetValue<string>("SMTP_Password");
-
-            // Создание сообщения
-            MailMessage message = new MailMessage();
-            message.From = new MailAddress(_configuration.GetValue<string>("SMTP_Username"));
-            message.To.Add(new MailAddress(recipientEmail));
-            message.Subject = "Подтверждение регистрации";
-            message.BodyEncoding = System.Text.Encoding.UTF8; // указание кодировки письма
-            message.IsBodyHtml = true; // указание формата письма (true - HTML, false - не HTML)
-            // Загрузка HTML-шаблона из файла или строки
-            string htmlTemplate = System.IO.File.ReadAllText(Path.Combine("wwwroot", "html", "confirmation_email_template.html"));
-
-            // Вставка данных в HTML-шаблон
-            htmlTemplate = htmlTemplate.Replace("{{username}}", username);
-            htmlTemplate = htmlTemplate.Replace("{{confirmationLink}}", confirmationLink);
-            message.Body = htmlTemplate;
-            // Настройка клиента SMTP
-            SmtpClient smtpClient = new SmtpClient(smtpHost, smtpPort);
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network; // определяет метод отправки сообщений
-            smtpClient.EnableSsl = true; // отключает необходимость использования защищенного соединения с сервером
-            smtpClient.UseDefaultCredentials = false; // отключение использования реквизитов авторизации "по-умолчанию"
-            smtpClient.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
-
-            // Отправка письма
-            smtpClient.SendMailAsync(message);
-        }
-
-        [HttpGet("[controller]/[action]/{mail}")]
-        public async Task<IActionResult> CheckEmailVerified(string mail)
-        {
-            // Проверка статуса подтверждения почты
-            var userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(mail);
-            if (userRecord.EmailVerified)
-            {
-                return Ok("Почта подтверждена");
-            }
-            else
-            {
-                return BadRequest("Подтвердите вашу почту, чтобы завершить регистрацию.");
-            }
         }
     }
 }

@@ -9,39 +9,48 @@
 <p>
     <a asp-action="CreateDepartment" class="btn btn-success"><i class="bi bi-plus"></i>Добавить</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                Название
-            </th>
-            <th>
-                Описание
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    <a asp-action="UpdateDepartment" asp-route-id="@item.Id" class="btn btn-primary"><i class="bi bi-pencil"></i></a>
-                    <a asp-action="DeleteDepartment" asp-route-id="@item.Id" class="btn btn-danger"><i class="bi bi-trash"></i></a>
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    Название
+                </th>
+                <th>
+                    Описание
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        <a asp-action="UpdateDepartment" asp-route-id="@item.Id" class="btn btn-primary"><i class="bi bi-pencil"></i></a>
+                        <a asp-action="DeleteDepartment" asp-route-id="@item.Id" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Отсутствуют отделы разработки. Добавьте новые.</p>
+}
+

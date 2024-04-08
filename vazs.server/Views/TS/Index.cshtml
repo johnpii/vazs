@@ -6,40 +6,48 @@
 
 <h1>Поданные технические задания</h1>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Название</th>
-                <th>Описание</th>
-                <th>Дата создания</th>
-                <th>Дата окончания работ</th>
-                <th>Бюджет</th>
-                <th>Название отдела разработки</th>
-                <th>Ссылка на документ</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var ts in Model)
-            {
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
                 <tr>
-                    <td>@ts.Name</td>
-                    <td>@ts.Description</td>
-                    <td>@ts.CreationDate.ToString("yyyy-MM-dd")</td>
-                    <td>@ts.Deadline.ToString("yyyy-MM-dd")</td>
-                    <td>@ts.Budget &#x20bd;</td>
-                    <td>@ts.DepartmentName</td>
-                    <td><a href="@ts.DownloadUrl" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i>@ts.DocumentExt</a></td>
-                    <td>
-                        <div class="d-flex justify-content-center">
-                            <a asp-action="UpdateTS" asp-route-id="@ts.Id" class="btn btn-primary"><i class="bi bi-pencil"></i></a>
-                            <div class="mx-1"></div>
-                            <a asp-action="DeleteTS" asp-route-id="@ts.Id" class="btn btn-danger"><i class="bi bi-trash"></i></a>
-                        </div>
-                    </td>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Дата создания</th>
+                    <th>Дата окончания работ</th>
+                    <th>Бюджет</th>
+                    <th>Название отдела разработки</th>
+                    <th>Ссылка на документ</th>
+                    <th>Действия</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach (var ts in Model)
+                {
+                    <tr>
+                        <td>@ts.Name</td>
+                        <td>@ts.Description</td>
+                        <td>@ts.CreationDate.ToString("yyyy-MM-dd")</td>
+                        <td>@ts.Deadline.ToString("yyyy-MM-dd")</td>
+                        <td>@ts.Budget &#x20bd;</td>
+                        <td>@ts.DepartmentName</td>
+                        <td><a href="@ts.DownloadUrl" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i>@ts.DocumentExt</a></td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <a asp-action="UpdateTS" asp-route-id="@ts.Id" class="btn btn-primary"><i class="bi bi-pencil"></i></a>
+                                <div class="mx-1"></div>
+                                <a asp-action="DeleteTS" asp-route-id="@ts.Id" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>У вас нету поданных технических заданий. Вы можете подать их выбрав отдел разработки.</p>
+    <p><a href="@Url.Action("Index", "Home")">Перейти к выбору отдела разработки</a></p>
+}
