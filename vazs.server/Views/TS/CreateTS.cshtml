@@ -36,35 +36,21 @@
             </div>
             <div class="form-group">
                 <label asp-for="Document" class="control-label">Выберите файл для загрузки:</label>
-                <input id="fileInput" asp-for="Document" type="file" accept="application/*" class="form-control" />
-                <span id="fileError" asp-validation-for="Document" class="text-danger"></span>
+                <input asp-for="Document" type="file" accept="application/*" class="form-control" />
+                <span asp-validation-for="Document" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="hidden" asp-for="ClientEmail" value=@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value />
             </div>
             <div class="form-group">
-                <input type="hidden" asp-for="DepartmentName" value="@ViewContext.RouteData.Values["DepartmentName"]" />
+                <input type="hidden" asp-for="DepartmentName" value="@Context.Request.Query["DepartmentName"]" />
             </div>
             <div class="form-group">
-                <button id="saveButton" type="submit" class="btn btn-primary mt-2" onclick="createTS()">Создать ТЗ</button>
+                <button type="submit" class="btn btn-primary mt-2">Создать ТЗ</button>
             </div>
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById('saveButton').addEventListener('click', function (event) {
-        var inputFile = document.getElementById('fileInput');
-        var imageError = document.getElementById('fileError');
-
-        if (inputFile.files.length === 0) {
-            imageError.innerText = 'Это поле обязательно';
-            event.preventDefault(); // Останавливаем отправку формы
-        } else {
-            imageError.innerText = '';
-        }
-    });
-</script>
 
 @section Scripts {
     @{

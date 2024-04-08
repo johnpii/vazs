@@ -24,9 +24,9 @@ namespace vazs.server.Controllers
             {
                 var departments = await _firebaseClient
                 .Child("departments")
-                .OnceAsync<Department>();
+                .OnceAsync<DepartmentModelForDatabase>();
 
-                var departmentList = departments.Select(d => new DepartmentWithId
+                var departmentList = departments.Select(d => new DepartmentModelForIndex
                 {
                     Id = d.Key,
                     Name = d.Object.Name,
@@ -53,7 +53,7 @@ namespace vazs.server.Controllers
         {
             try
             {
-                Department depart = new Department();
+                DepartmentModelForDatabase depart = new DepartmentModelForDatabase();
                 depart.Name = department.Name;
                 depart.Description = department.Description;
                 using (var memoryStream = new MemoryStream())
@@ -80,7 +80,7 @@ namespace vazs.server.Controllers
                 var department = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<Department>();
+                    .OnceSingleAsync<DepartmentModelForDatabase>();
 
                 if (department != null)
                 {
@@ -111,7 +111,7 @@ namespace vazs.server.Controllers
                 var departmentToUpdate = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<Department>();
+                    .OnceSingleAsync<DepartmentModelForDatabase>();
 
                 if (departmentToUpdate != null)
                 {
@@ -150,18 +150,11 @@ namespace vazs.server.Controllers
                 var department = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<Department>();
+                    .OnceSingleAsync<DepartmentModelForDatabase>();
 
                 if (department != null)
-                {
-                    var departmentModel = new Department
-                    {
-                        Name = department.Name,
-                        Description = department.Description,
-                        Image = department.Image
-                    };
-
-                    return View(departmentModel);
+                {       
+                    return View(department);
                 }
                 else
                 {
@@ -182,7 +175,7 @@ namespace vazs.server.Controllers
                 var departmentToDelete = await _firebaseClient
                     .Child("departments")
                     .Child(uid)
-                    .OnceSingleAsync<Department>();
+                    .OnceSingleAsync<DepartmentModelForDatabase>();
 
                 if (departmentToDelete != null)
                 {

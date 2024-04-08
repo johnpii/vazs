@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
-using vazs.server.Models;
+using vazs.server.ViewModels;
 
 namespace vazs.server.Controllers
 {

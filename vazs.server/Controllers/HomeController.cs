@@ -23,9 +23,9 @@ namespace vazs.server.Controllers
             {
                 var departments = await _firebaseClient
                 .Child("departments")
-                .OnceAsync<Department>();
+                .OnceAsync<DepartmentModelForDatabase>();
 
-                var departmentList = departments.Select(d => new Department
+                var departmentList = departments.Select(d => new DepartmentModelForDatabase
                 {
                     Name = d.Object.Name,
                     Description = d.Object.Description,

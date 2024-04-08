@@ -92,7 +92,7 @@ namespace vazs.server.Controllers
                     .Child(fileName + extension)
                     .PutAsync(stream);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "TS");
             }
             catch (Exception ex)
             {

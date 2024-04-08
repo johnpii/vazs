@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace vazs.server.Models
+namespace vazs.server.ViewModels
 {
     public class LoginModel
     {
