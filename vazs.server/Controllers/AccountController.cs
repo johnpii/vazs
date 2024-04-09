@@ -38,10 +38,8 @@ namespace vazs.server.Controllers
                     { "role", "user" }
                 });
 
-                // Генерация ссылки для подтверждения почты
                 var emailActionLink = await FirebaseAuth.DefaultInstance.GenerateEmailVerificationLinkAsync(user.Email);
 
-                // Отправка письма с ссылкой для подтверждения почты
                 _emailService.SendConfirmationEmail(user.Email, emailActionLink, user.Username);
 
                 ViewBag.ConfirmationMessage = "На вашу почту было отправлено письмо с подтверждением";
@@ -86,6 +84,7 @@ namespace vazs.server.Controllers
             {
                 var userCredential = await _client.SignInWithEmailAndPasswordAsync(user.Email, user.Password);
                 string uid = userCredential.User.Uid;
+
                 if (!string.IsNullOrEmpty(uid))
                 {
                     var userData = await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
@@ -105,6 +104,7 @@ namespace vazs.server.Controllers
                     var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
                     var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                     await HttpContext.SignInAsync(claimsPrincipal);
+
                     var returnUrl = Request.Cookies["returnUrl"];
                     Response.Cookies.Delete("returnUrl");
                     return Redirect(returnUrl ?? "/");

@@ -32,14 +32,10 @@ namespace vazs.server.Controllers
                     .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .OnceAsync<TSModelForDelete>();
 
-                // Получаем ссылки на файлы из Firebase Storage и добавляем их в соответствующие модели TS
                 foreach (var ts in tsList)
                 {
-                    // Получаем ссылку на файл в Firebase Storage
                     var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(ts.Key + ts.Object.DocumentExt);
                     var downloadUrl = await storageClient.GetDownloadUrlAsync();
-
-                    // Добавляем ссылку на файл в модель TS
                     ts.Object.DownloadUrl = downloadUrl.ToString();
                 }
 
@@ -80,12 +76,11 @@ namespace vazs.server.Controllers
 
                 ts.Document = null;
                 ts.DocumentExt = extension;
-                // Загружаем информацию о TS в Firebase Realtime Database
+
                 var postResponse = await _firebaseClient.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).PostAsync(ts);
 
                 string fileName = postResponse.Key;
 
-                // Загружаем изображение в Firebase Storage
                 await _firebaseStorage
                     .Child("ts")
                     .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
@@ -117,7 +112,7 @@ namespace vazs.server.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Если ТЗ с указанным ID не найдено
+                    return NotFound();
                 }
             }
             catch (Exception ex)
@@ -131,7 +126,6 @@ namespace vazs.server.Controllers
         {
             try
             {
-                // Получаем данные о TS для обновления
                 var tsToUpdate = await _firebaseClient
                     .Child("ts")
                     .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
@@ -140,12 +134,10 @@ namespace vazs.server.Controllers
 
                 if (tsToUpdate != null)
                 {
-                    // Если загружено новое изображение, обновляем его
                     if (ts.Document != null)
                     {
                         string fileNamePrev = uid + tsToUpdate.DocumentExt;
 
-                        // Удаляем старое изображение из Firebase Storage
                         await _firebaseStorage
                             .Child("ts")
                             .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
@@ -155,7 +147,7 @@ namespace vazs.server.Controllers
                         var stream = ts.Document.OpenReadStream();
                         string extension = Path.GetExtension(ts.Document.FileName);
                         string fileNamePres = uid + extension;
-                        // Загружаем новое изображение в Firebase Storage
+
                         await _firebaseStorage
                             .Child("ts")
                             .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
@@ -165,13 +157,11 @@ namespace vazs.server.Controllers
                         tsToUpdate.DocumentExt = extension;
                     }
 
-                    // Обновляем остальные поля TS
                     tsToUpdate.Name = ts.Name;
                     tsToUpdate.Description = ts.Description;
                     tsToUpdate.Deadline = ts.Deadline;
                     tsToUpdate.Budget = ts.Budget;
 
-                    // Обновляем данные TS в Firebase Realtime Database
                     await _firebaseClient
                         .Child("ts")
                         .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
@@ -182,7 +172,7 @@ namespace vazs.server.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Если ТЗ с указанным ID не найдено
+                    return NotFound();
                 }
             }
             catch (Exception ex)
@@ -199,18 +189,17 @@ namespace vazs.server.Controllers
                     .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
                     .Child(uid)
                     .OnceSingleAsync<TSModelForDelete>();
+
             if (ts != null)
             {
                 var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(uid + ts.DocumentExt);
                 var downloadUrl = await storageClient.GetDownloadUrlAsync();
-
-                // Добавляем ссылку на файл в модель TS
                 ts.DownloadUrl = downloadUrl.ToString();
                 return View(ts);
             }
             else
             {
-                return NotFound(); // Если ТЗ с указанным ID не найдено
+                return NotFound();
             }
         }
 
@@ -235,7 +224,6 @@ namespace vazs.server.Controllers
 
                     string fileName = uid + tsToDelete.DocumentExt;
 
-                    // Удаляем старое изображение из Firebase Storage
                     await _firebaseStorage
                         .Child("ts")
                         .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
@@ -246,7 +234,7 @@ namespace vazs.server.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Если ТЗ с указанным ID не найдено
+                    return NotFound();
                 }
             }
             catch (Exception ex)

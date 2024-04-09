@@ -61,6 +61,7 @@ namespace vazs.server.Controllers
                     department.Image.CopyTo(memoryStream);
                     depart.Image = memoryStream.ToArray();
                 }
+
                 await _firebaseClient
                     .Child("departments")
                     .PostAsync(depart);
@@ -94,7 +95,7 @@ namespace vazs.server.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Если департамент с указанным ID не найден
+                    return NotFound();
                 }
             }
             catch (Exception ex)
@@ -125,15 +126,17 @@ namespace vazs.server.Controllers
                             departmentToUpdate.Image = memoryStream.ToArray();
                         }
                     }
+
                     await _firebaseClient
                         .Child("departments")
                         .Child(uid)
                         .PutAsync(departmentToUpdate);
+
                     return RedirectToAction("Index", "Admin");
                 }
                 else
                 {
-                    return NotFound(); // Если департамент с указанным ID не найден
+                    return NotFound();
                 }
             }
             catch (Exception ex)
@@ -158,7 +161,7 @@ namespace vazs.server.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Если департамент с указанным ID не найден
+                    return NotFound();
                 }
             }
             catch (Exception ex)
@@ -188,7 +191,7 @@ namespace vazs.server.Controllers
                 }
                 else
                 {
-                    return NotFound(); // Если департамент с указанным ID не найден
+                    return NotFound();
                 }
             }
             catch (Exception ex)
