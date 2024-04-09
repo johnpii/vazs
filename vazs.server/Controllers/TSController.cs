@@ -80,7 +80,7 @@ namespace vazs.server.Controllers
                 var postResponse = await _firebaseClient.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).PostAsync(ts);
 
                 string fileName = postResponse.Key;
-
+  
                 await _firebaseStorage
                     .Child("ts")
                     .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))

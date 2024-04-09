@@ -17,7 +17,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/Login";
         options.ExpireTimeSpan = ConfigurationHelper.expireTimeCookie;
     });
-// Добавляем сервис FirebaseClient
+
+FirebaseApp.Create(new AppOptions
+{
+    Credential = GoogleCredential.FromFile(@"firebase_auth.json")
+});
+
 builder.Services.AddSingleton<FirebaseClient>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
@@ -50,12 +55,6 @@ builder.Services.AddSingleton<FirebaseAuthClient>(provider =>
                 }
     };
     client = new FirebaseAuthClient(config);
-
-    FirebaseApp.Create(new AppOptions
-    {
-        Credential = GoogleCredential.FromFile(@"firebase_auth.json")
-    });
-
     return client;
 });
 

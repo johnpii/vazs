@@ -118,14 +118,11 @@ namespace vazs.server.Controllers
                 {
                     departmentToUpdate.Name = department.Name;
                     departmentToUpdate.Description = department.Description;
-                    if (department.Image != null)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        using (var memoryStream = new MemoryStream())
-                        {
-                            department.Image.CopyTo(memoryStream);
-                            departmentToUpdate.Image = memoryStream.ToArray();
-                        }
-                    }
+                        department.Image.CopyTo(memoryStream);
+                        departmentToUpdate.Image = memoryStream.ToArray();
+                    }    
 
                     await _firebaseClient
                         .Child("departments")
