@@ -26,7 +26,7 @@ namespace vazs.server.Controllers
                 .Child("departments")
                 .OnceAsync<DepartmentModelForDatabase>();
 
-                var departmentList = departments.Select(d => new DepartmentModelForIndex
+                var departmentListToView = departments.Select(d => new DepartmentModelForIndex
                 {
                     Id = d.Key,
                     Name = d.Object.Name,
@@ -34,7 +34,7 @@ namespace vazs.server.Controllers
                     Image = d.Object.Image
                 }).ToList();
 
-                return View(departmentList);
+                return View(departmentListToView);
             }
             catch (Exception ex)
             {

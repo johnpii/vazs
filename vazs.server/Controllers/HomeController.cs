@@ -25,14 +25,14 @@ namespace vazs.server.Controllers
                 .Child("departments")
                 .OnceAsync<DepartmentModelForDatabase>();
 
-                var departmentList = departments.Select(d => new DepartmentModelForDatabase
+                var departmentListToView = departments.Select(d => new DepartmentModelForDatabase
                 {
                     Name = d.Object.Name,
                     Description = d.Object.Description,
                     Image = d.Object.Image
                 }).ToList();
 
-                return View(departmentList);
+                return View(departmentListToView);
             }
             catch (Exception ex)
             {
