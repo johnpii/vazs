@@ -124,6 +124,7 @@ namespace vazs.server.Controllers
                 }
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
