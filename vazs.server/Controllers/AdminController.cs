@@ -73,6 +73,7 @@ namespace vazs.server.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("[controller]/UpdateDepartment/{uid}")]
         public async Task<ActionResult> UpdateDepartment(string uid)
         {
