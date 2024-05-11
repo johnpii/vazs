@@ -34,9 +34,12 @@ namespace vazs.server.Controllers
 
                 foreach (var ts in tsList)
                 {
-                    var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(ts.Key + ts.Object.DocumentExt);
-                    var downloadUrl = await storageClient.GetDownloadUrlAsync();
-                    ts.Object.DownloadUrl = downloadUrl.ToString();
+                    if (ts.Object.DocumentExt != null)
+                    {
+                        var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(ts.Key + ts.Object.DocumentExt);
+                        var downloadUrl = await storageClient.GetDownloadUrlAsync();
+                        ts.Object.DownloadUrl = downloadUrl.ToString();
+                    }
                 }
 
                 var tsListToView = tsList.Select(d => new TSModelForIndex
@@ -71,22 +74,28 @@ namespace vazs.server.Controllers
         {
             try
             {
-                var stream = ts.Document.OpenReadStream();
-                string extension = Path.GetExtension(ts.Document.FileName);
+                if (ts.Document != null)
+                {
+                    var stream = ts.Document.OpenReadStream();
+                    string extension = Path.GetExtension(ts.Document.FileName);
 
-                ts.Document = null;
-                ts.DocumentExt = extension;
+                    ts.Document = null;
+                    ts.DocumentExt = extension;
 
-                var postResponse = await _firebaseClient.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).PostAsync(ts);
+                    var postResponse = await _firebaseClient.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).PostAsync(ts);
 
-                string fileName = postResponse.Key;
+                    string fileName = postResponse.Key;
 
-                await _firebaseStorage
-                    .Child("ts")
-                    .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
-                    .Child(fileName + extension)
-                    .PutAsync(stream);
-
+                    await _firebaseStorage
+                        .Child("ts")
+                        .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
+                        .Child(fileName + extension)
+                        .PutAsync(stream);
+                }
+                else
+                {
+                    var postResponse = await _firebaseClient.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).PostAsync(ts);
+                }
                 return RedirectToAction("Index", "TS");
             }
             catch (Exception ex)
@@ -190,11 +199,15 @@ namespace vazs.server.Controllers
                     .Child(uid)
                     .OnceSingleAsync<TSModelForDelete>();
 
-            if (ts != null)
+            if (ts.DocumentExt != null)
             {
                 var storageClient = _firebaseStorage.Child("ts").Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_")).Child(uid + ts.DocumentExt);
                 var downloadUrl = await storageClient.GetDownloadUrlAsync();
                 ts.DownloadUrl = downloadUrl.ToString();
+                return View(ts);
+            }
+            else if (ts != null)
+            {
                 return View(ts);
             }
             else
@@ -222,13 +235,15 @@ namespace vazs.server.Controllers
                         .Child(uid)
                         .DeleteAsync();
 
-                    string fileName = uid + tsToDelete.DocumentExt;
+                    if (tsToDelete.DocumentExt != null) {
+                        string fileName = uid + tsToDelete.DocumentExt;
 
-                    await _firebaseStorage
-                        .Child("ts")
-                        .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
-                        .Child(fileName)
-                        .DeleteAsync();
+                        await _firebaseStorage
+                            .Child("ts")
+                            .Child(HttpContext.User.FindFirstValue(ClaimTypes.Email).Replace(".", "_"))
+                            .Child(fileName)
+                            .DeleteAsync();
+                    }
 
                     return RedirectToAction("Index", "TS");
                 }
