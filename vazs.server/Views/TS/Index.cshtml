@@ -35,9 +35,9 @@
                         <td><a href="@ts.DownloadUrl" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i>@ts.DocumentExt</a></td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <a asp-action="UpdateTS" asp-route-id="@ts.Id" class="btn btn-primary"><i class="bi bi-pencil"></i></a>
+                                <a asp-action="UpdateTS" asp-route-id="@ts.Id" class="btn btn-primary" id="edit"><i class="bi bi-pencil"></i></a>
                                 <div class="mx-1"></div>
-                                <a asp-action="DeleteTS" asp-route-id="@ts.Id" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                                <a asp-action="DeleteTS" asp-route-id="@ts.Id" class="btn btn-danger" id="delete"><i class="bi bi-trash"></i></a>
                             </div>
                         </td>
                     </tr>

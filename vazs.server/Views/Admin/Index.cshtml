@@ -7,7 +7,7 @@
 <h1>Отделы разработки</h1>
 
 <p>
-    <a asp-action="CreateDepartment" class="btn btn-success"><i class="bi bi-plus"></i>Добавить</a>
+    <a asp-action="CreateDepartment" class="btn btn-success" id="addDepartment"><i class="bi bi-plus"></i>Добавить</a>
 </p>
 
 @if (Model.Any())
@@ -44,9 +44,9 @@
                     </td>
                     <td>
                         <div class="d-flex justify-content-center">
-                            <a asp-action="UpdateDepartment" asp-route-id="@item.Id" class="btn btn-primary"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="UpdateDepartment" asp-route-id="@item.Id" class="btn btn-primary" id="edit"><i class="bi bi-pencil"></i></a>
                             <div class="mx-1"></div>
-                            <a asp-action="DeleteDepartment" asp-route-id="@item.Id" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                            <a asp-action="DeleteDepartment" asp-route-id="@item.Id" class="btn btn-danger" id="delete"><i class="bi bi-trash"></i></a>
                         </div>
                     </td>
                 </tr>
