@@ -6,6 +6,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using vazs.server.Helpers;
+using vazs.server.Profiles;
 using vazs.server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,6 +58,8 @@ builder.Services.AddSingleton<FirebaseAuthClient>(provider =>
     client = new FirebaseAuthClient(config);
     return client;
 });
+
+builder.Services.AddAutoMapper(typeof(TSIndexMappingProfile), typeof(AdminDepartmentIndexMappingProfile), typeof(HomeDepartmentIndexMappingProfile));
 
 builder.Services.AddScoped<EmailService>();
 

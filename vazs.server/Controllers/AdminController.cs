@@ -1,4 +1,5 @@
-﻿using Firebase.Database;
+﻿using AutoMapper;
+using Firebase.Database;
 using Firebase.Database.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace vazs.server.Controllers
     public class AdminController : Controller
     {
         private readonly FirebaseClient _firebaseClient;
+        private readonly IMapper _mapper;
 
-        public AdminController(FirebaseClient firebaseClient)
+        public AdminController(FirebaseClient firebaseClient, IMapper mapper)
         {
             _firebaseClient = firebaseClient;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -26,13 +29,7 @@ namespace vazs.server.Controllers
                 .Child("departments")
                 .OnceAsync<DepartmentModelForDatabase>();
 
-                var departmentListToView = departments.Select(d => new DepartmentModelForIndex
-                {
-                    Id = d.Key,
-                    Name = d.Object.Name,
-                    Description = d.Object.Description,
-                    Image = d.Object.Image
-                }).ToList();
+                var departmentListToView = _mapper.Map<List<DepartmentModelForIndex>>(departments);
 
                 return View(departmentListToView);
             }

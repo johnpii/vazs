@@ -1,4 +1,5 @@
-﻿using Firebase.Database;
+﻿using AutoMapper;
+using Firebase.Database;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using vazs.server.Models;
@@ -9,11 +10,13 @@ namespace vazs.server.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly FirebaseClient _firebaseClient;
+        private readonly IMapper _mapper;
 
-        public HomeController(ILogger<HomeController> logger, FirebaseClient firebaseClient)
+        public HomeController(ILogger<HomeController> logger, FirebaseClient firebaseClient, IMapper mapper)
         {
             _logger = logger;
             _firebaseClient = firebaseClient;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -25,12 +28,7 @@ namespace vazs.server.Controllers
                 .Child("departments")
                 .OnceAsync<DepartmentModelForDatabase>();
 
-                var departmentListToView = departments.Select(d => new DepartmentModelForDatabase
-                {
-                    Name = d.Object.Name,
-                    Description = d.Object.Description,
-                    Image = d.Object.Image
-                }).ToList();
+                var departmentListToView = _mapper.Map<List<DepartmentModelForDatabase>>(departments);
 
                 return View(departmentListToView);
             }

@@ -1,4 +1,5 @@
-﻿using Firebase.Database;
+﻿using AutoMapper;
+using Firebase.Database;
 using Firebase.Database.Query;
 using Firebase.Storage;
 using Microsoft.AspNetCore.Authorization;
@@ -15,11 +16,13 @@ namespace vazs.server.Controllers
 
         private readonly FirebaseClient _firebaseClient;
         private readonly FirebaseStorage _firebaseStorage;
+        private readonly IMapper _mapper;
 
-        public TSController(FirebaseClient firebaseClient, FirebaseStorage firebaseStorage)
+        public TSController(FirebaseClient firebaseClient, FirebaseStorage firebaseStorage, IMapper mapper)
         {
             _firebaseClient = firebaseClient;
             _firebaseStorage = firebaseStorage;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -42,18 +45,7 @@ namespace vazs.server.Controllers
                     }
                 }
 
-                var tsListToView = tsList.Select(d => new TSModelForIndex
-                {
-                    Id = d.Key,
-                    Name = d.Object.Name,
-                    Description = d.Object.Description,
-                    CreationDate = d.Object.CreationDate,
-                    Deadline = d.Object.Deadline,
-                    Budget = d.Object.Budget,
-                    DocumentExt = d.Object.DocumentExt,
-                    DepartmentName = d.Object.DepartmentName,
-                    DownloadUrl = d.Object.DownloadUrl
-                }).ToList();
+                var tsListToView = _mapper.Map<List<TSModelForIndex>>(tsList);
 
                 return View(tsListToView);
             }
@@ -235,7 +227,8 @@ namespace vazs.server.Controllers
                         .Child(uid)
                         .DeleteAsync();
 
-                    if (tsToDelete.DocumentExt != null) {
+                    if (tsToDelete.DocumentExt != null)
+                    {
                         string fileName = uid + tsToDelete.DocumentExt;
 
                         await _firebaseStorage
