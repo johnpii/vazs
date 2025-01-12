@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { login } from "../services/auth.service";
 import "./LoginPage.scss"
+import HomeButton from "../ui/HomeButton";
 
 const LoginPage = () => {
   const [email, setEmail] = useState(null);
@@ -45,6 +46,8 @@ const LoginPage = () => {
           </Link>
         </div>
       </div>
+
+      <HomeButton />
     </div>
   );
 }

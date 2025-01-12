@@ -1,0 +1,25 @@
+.home-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+  
+    .home-button__link {
+      text-decoration: none;
+      color: #090A0C;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 8px 16px;
+      background: #f5c8f2;
+      border-radius: 7px;
+      border: 2px solid #c0c0c0;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, color 0.3s;
+  
+      &:hover {
+        background-color: #f7a8f2;
+        color: #fff;
+      }
+    }
+  }
+  

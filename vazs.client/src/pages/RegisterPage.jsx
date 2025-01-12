@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { register } from "../services/auth.service";
 import "./RegisterPage.scss"
+import HomeButton from "../ui/HomeButton";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState(null);
@@ -52,6 +53,8 @@ const RegisterPage = () => {
           </button>
         </form>
       </div>
+
+      <HomeButton />
     </div>
   );
 }

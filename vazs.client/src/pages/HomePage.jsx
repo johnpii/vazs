@@ -6,16 +6,16 @@ const HomePage = () => {
       <nav>
         <Link className="item__link" to={HomePage}>
           <span className="logo">
-            Studio <br />
-            logo
+            vazs <br />
+            client
           </span>
         </Link>
         <ul className="nav">
           <li className="nav__item">
-            <Link className="item__link">Главная</Link>
+            <Link to="/home" className="item__link">Главная</Link>
           </li>
           <li className="nav__item">
-            <Link className="item__link">
+            <Link to="/login" className="item__link">
               <div className="register-link">Войти</div>
             </Link>
           </li>
@@ -24,13 +24,13 @@ const HomePage = () => {
       <header>
         <h1 className="header__title">Кто мы?</h1>
         <div className="header__text">
-          Здесь текст про то, что мы студия крутых разрабов
+          Здесь текст 
         </div>
       </header>
       <main>
         <h1 className="main__title">Чем мы<br/>занимаемся?</h1>
         <div className="main__text">
-          Здесь текст про то, что мы делаем крутые сайты
+          Здесь текст 
         </div>
       </main>
       <section className="about">in progress</section>
